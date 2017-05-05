@@ -6,57 +6,93 @@
 /*   By: iiliuk <iiliuk@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 12:46:42 by iiliuk            #+#    #+#             */
-/*   Updated: 2017/05/02 17:46:29 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/04 18:41:23 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_db.h"
 
-int flag = 0;
+int g_flag = 0;
 
 /* fetch: Store input from user */
-void	fetch(char *buffer)
+void		fetch(char *buffer)
 {
 	int c, i;
-	int max = MAX_BLOCK;
 
 	i = 0;
-	while((c = getchar()) != '\n')
+	while ((c = getchar()) != '\n')
 	{
-		if(i >= max)
+		if (i >= MAX_BLOCK)
 		{
 			printf(BLUE "Exceeded maximum allowed lenght\n" NC);
-			break;
+			break ;
 		}
 		buffer[i++] = c;
 	}
 	buffer[i] = '\0';
 }
 
-void	append(PersonalInfo *pInfo, FILE *fp)
-{
-	char	line[MAXLINE];
 
-	if (flag)
+static int	digit_check(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (isdigit(str[i]))
+			i++;
+		else
+		{
+			printf(RED "Error: only digits are allowed in this field\n" NC);
+			return (0);
+		}
+	}
+	return (1);
+}
+
+static void	age_loop(PersonalInfo *pInfo)
+{
+	char tmp[MAX_BLOCK];
+
+	while (1)
+	{
+		printf(CYAN "Age: " BLUE);
+		fetch((tmp));
+		if (digit_check(tmp))
+		{
+			strcpy(pInfo->age, tmp);
+			break ;
+		}
+		else
+			printf(CYAN "Please, try again\n" BLUE);
+	}
+}
+
+void		append(PersonalInfo *pInfo, FILE *fp)
+{
+	char line[MAXLINE];
+	
+
+	if (g_flag)
 	{
 		getchar();
-		flag = 0;
+		g_flag = 0;
 	}
 	printf(CYAN "Firstname: " BLUE);
 	fetch(pInfo->name);
 	printf(CYAN "Lastname: " BLUE);
 	fetch(pInfo->lastname);
-	printf(CYAN "IQ: " BLUE);
-	fetch(pInfo->iq);
+	age_loop(pInfo);
 	printf(CYAN "Work: " BLUE);
 	fetch(pInfo->workplace);
 	printf("" NC);
-	flag = 1;
+	g_flag = 1;
 	write_to_line(pInfo, line);
 	fputs(line, fp);
 }
 
-void	create_entry(FILE *fp)
+void		create_entry(FILE *fp)
 {
 	char answer[5];
 	PersonalInfo info, *pInfo = &info;

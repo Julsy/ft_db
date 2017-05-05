@@ -6,13 +6,13 @@
 #    By: lgutniko <lgutniko@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/27 12:03:56 by lgutniko          #+#    #+#              #
-#    Updated: 2017/05/03 14:10:50 by iiliuk           ###   ########.fr        #
+#    Updated: 2017/05/04 18:26:00 by iiliuk           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= ft_db
 SRC		= ft_db.c del_by_num.c del_by_keyword.c append.c search.c print.c \
-		edit_by_num.c edit_by_keyword.c
+		edit_by_num.c edit_by_keyword.c rewrite_file.c get_record.c
 FLAG	= -Wall -Wextra -Werror
 OBJ		= $(SRC:.c=.o)
 

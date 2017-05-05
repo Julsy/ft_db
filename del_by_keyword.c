@@ -6,20 +6,33 @@
 /*   By: iiliuk <iiliuk@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 12:03:09 by iiliuk            #+#    #+#             */
-/*   Updated: 2017/05/02 16:14:09 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/04 18:26:20 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_db.h"
 
-void	del_by_keyword(FILE *fp, char **argv)
+static void	del_by_keyword_2(FILE *fp, char **argv, int found, char *keyword)
+{
+	if (!found)
+		no_record_found_message(fp, 0, keyword);
+	else if (found > 1)
+	{
+		printf(MAG "There are %d records found by the ", found);
+		printf("\"%s\" keyword\n", keyword);
+		printf("Now it's best to choose record to delete by number\n" NC);
+		del_record_by_num(fp, argv);
+	}
+}
+
+void		del_by_keyword(FILE *fp, char **argv)
 {
 	PersonalInfo info, *pInfo = &info;
 	char buf[MAXLINE];
-	int got_it, record_nm, found_records, found;
+	int got_it, record_nm, found_records, match;
 	char keyword[MAX_BLOCK];
 
-	record_nm = 1, got_it = 0, found_records = 0, found = 0;
+	record_nm = 1, got_it = 0, found_records = 0, match = 0;
 	printf(MAG "Enter keyword to find a record you want to delete: ");
 	scanf("%s" NC, keyword);
 	while(fgets(buf, MAXLINE, fp))
@@ -29,28 +42,16 @@ void	del_by_keyword(FILE *fp, char **argv)
 		if (got_it)
 		{
 			if (found_records == 0)
-				found = got_it;
+				match = got_it;
 			found_records++;
 		}
 	}
-	if (!found_records)
-	{
-		printf(RED "\nThere's no record matching your request\n"); 
-		printf("Print database to see existing records (./ft_db -p [file_name.db]\n" NC);
-		fclose(fp);
-		exit(1);
-	}
-	else if (found_records > 1)
-	{
-		printf(MAG "There are %d records found by the \"%s\" keyword\n", found_records, keyword);
-		printf(MAG "Now it's best to choose record to delete by number\n");
-		del_record_by_num(fp, argv);
-	}
-	else
-		del_entry(fp, argv, found);
+	del_by_keyword_2(fp, argv, found_records, keyword);
+	if (found_records == 1)
+		del_entry(fp, argv, match);
 }
 
-void del_entry(FILE *fp, char **argv, int line_number)
+void		del_entry(FILE *fp, char **argv, int line_number)
 {
 	FILE *fp2;
 	char buf[MAXLINE];

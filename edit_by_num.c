@@ -6,7 +6,7 @@
 /*   By: iiliuk <iiliuk@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 18:09:38 by iiliuk            #+#    #+#             */
-/*   Updated: 2017/05/02 18:14:40 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/04 18:26:09 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void 	edit_record_by_num(FILE *fp, char **argv)
 	printf(MAG "Enter record number to be edited: ");
 	scanf("%d" NC, &record_nm);
 	rewind(fp);
-	while(fgets(buf, MAXLINE, fp))
+	while (fgets(buf, MAXLINE, fp))
 	{
 		if (j == record_nm)
 		{
@@ -36,14 +36,8 @@ void 	edit_record_by_num(FILE *fp, char **argv)
 		j++;
 	}
 	if (!got_it)
-	{
-		printf(RED "\nThere's no record with this number in database\n"); 
-		printf("Print database to see existing records (./ft_db -p [file_name.db]\n" NC);
-		fclose(fp);
-		exit(1);
-	}
-	else
-		edit_field_loop(pInfo, fp, argv, record_nm);
+		no_record_found_message(fp, record_nm, NULL);
+	edit_field_loop(pInfo, fp, argv, record_nm);
 }
 	
 void	edit_field_loop(PersonalInfo *pInfo, FILE *fp, char **argv, int record_nm)
@@ -52,7 +46,7 @@ void	edit_field_loop(PersonalInfo *pInfo, FILE *fp, char **argv, int record_nm)
 	char line[MAXLINE];
 	char answer[5];
 
-	while(1)
+	while (1)
 	{
 		printf(MAG "Enter field number to be edited: [1/2/3/4] ");
 		scanf("%d" NC, &field_nm);

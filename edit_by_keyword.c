@@ -6,56 +6,90 @@
 /*   By: iiliuk <iiliuk@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 16:52:19 by iiliuk            #+#    #+#             */
-/*   Updated: 2017/05/02 18:10:53 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/04 18:39:57 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_db.h"
 
-void	edit_by_keyword(FILE *fp, char **argv)
+/* 	flag[0] = record number; */
+/* 	flag[1] = got it - when a keyword record is found */
+/* 	flag[2] = total found records */
+/* 	flag[3] = record number if it's the only one in the file */
+
+
+static void	edit_by_keyword_2(FILE *fp, char **argv, char *key, int found_records, int found, PersonalInfo *cInfo)
+{
+	if (!found_records)
+		no_record_found_message(fp, 0, key);
+	else if (found_records > 1)
+	{
+		printf(MAG "There are %d records found by the ", found_records);
+		printf("\"%s\" keyword\n", key);
+		printf("Now it's best to choose record to edit by number\n" NC);
+		edit_record_by_num(fp, argv);
+	}
+	else
+		edit_field_loop(cInfo, fp, argv, found);
+}
+
+void		edit_by_keyword(FILE *fp, char **argv)
 {
 	PersonalInfo info, *pInfo = &info;
 	PersonalInfo copy_info, *cInfo = &copy_info;
 	char buf[MAXLINE];
-	int got_it, record_nm, found_records, found;
 	char keyword[MAX_BLOCK];
+	int flag[4];
 
-	record_nm = 1, got_it = 0, found_records = 0, found = 0;
+	flag[0] = 1;
+	flag[1] = 0;
+	flag[2] = 0;
+	flag[3] = 0;
 	printf(MAG "Enter keyword to find a record you want to edit: ");
 	scanf("%s" NC, keyword);
-	while(fgets(buf, MAXLINE, fp))
+	while (fgets(buf, MAXLINE, fp))
 	{
 		get_record(buf, pInfo);
-		got_it = search(pInfo, keyword, record_nm);
-		record_nm++;
-		if (got_it)
+		flag[1] = search(pInfo, keyword, flag[0]++);
+		if (flag[1])
 		{
-			if (found_records == 0)
+			if (flag[2] == 0)
 			{
-				found = got_it;
+				flag[3] = flag[1];
 				*cInfo = *pInfo;
 			}
-			found_records++;
+			flag[2]++;
 		}
 	}
-	if (!found_records)
+	edit_by_keyword_2(fp, argv, keyword, flag[2], flag[3], cInfo);
+}
+
+static void	edit_field_2(PersonalInfo *pInfo, int nm)
+{
+	char new_entry[MAX_BLOCK];
+
+	if (nm == 3)
 	{
-		printf(RED "\nThere's no record matching your request\n"); 
-		printf("Print database to see existing records (./ft_db -p [file_name.db]\n" NC);
-		fclose(fp);
-		exit(1);
+		printf(CYAN "Enter new age: " BLUE);
+		fetch(new_entry);
+		printf("\n" NC);
+		strcpy(pInfo->age, new_entry);
 	}
-	else if (found_records == 1)
-		edit_field_loop(cInfo, fp, argv, found);
+	else if (nm == 4)
+	{
+		printf(CYAN "Enter new workplace: " BLUE);
+		fetch(new_entry);
+		printf("\n" NC);
+		strcpy(pInfo->workplace, new_entry);
+	}
 	else
 	{
-		printf(MAG "There are %d records found by the \"%s\" keyword\n", found_records, keyword);
-		printf(MAG "Now it's best to choose record to edit by number\n");
-		edit_record_by_num(fp, argv);
+		printf(BLUE "Please, choose between 4 fields: [1/2/3/4]\n\n" NC);
+		return ;
 	}
 }
 
-void	edit_field(PersonalInfo *pInfo, int nm)
+void		edit_field(PersonalInfo *pInfo, int nm)
 {
 	char new_entry[MAX_BLOCK];
 
@@ -73,59 +107,8 @@ void	edit_field(PersonalInfo *pInfo, int nm)
 		printf("\n" NC);
 		strcpy(pInfo->lastname, new_entry);
 	}
-	else if (nm == 3)
-	{
-		printf(CYAN "Enter new IQ: " BLUE);
-		fetch(new_entry);
-		printf("\n" NC);
-		strcpy(pInfo->iq, new_entry);
-	}
-	else if (nm == 4)
-	{
-		printf(CYAN "Enter new workplace: " BLUE);
-		fetch(new_entry);
-		printf("\n" NC);
-		strcpy(pInfo->workplace, new_entry);
-	}
 	else
-	{
-		printf(BLUE "Please, choose between 4 fields: [1/2/3/4]\n\n" NC);
-		return ;
-	}
+		edit_field_2(pInfo, nm);
 	printf(BLUE "Entry successfully edited!\n\n" NC);
 	print_record(pInfo, 0);
-}
-
-void	write_to_line(PersonalInfo *pInfo, char *line)
-{
-	strcpy(line, pInfo->name);
-	strcat(line, "\t");
-	strcat(line, pInfo->lastname);
-	strcat(line, "\t");
-	strcat(line, pInfo->iq);
-	strcat(line, "\t");
-	strcat(line, pInfo->workplace);
-	strcat(line, "\n\0");
-}
-
-void	rewrite_file(FILE *fp, char **argv, int line_number, char *line)
-{
-	FILE *fp2;
-	char buf[MAXLINE];
-	int nb_lines;
-
-    nb_lines = 0;
-	rewind(fp);
-	fp2 = fopen("replica.c", "w");
-	while(fgets(buf, MAXLINE, fp))
-	{
-		nb_lines++;
-		if (nb_lines != line_number)
-			fputs(buf, fp2);
-		else
-			fputs(line, fp2);
-	}
-	fclose(fp2);
-	remove(argv[optind]);
-	rename("replica.c", argv[optind]);
 }

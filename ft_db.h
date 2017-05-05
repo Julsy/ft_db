@@ -6,7 +6,7 @@
 /*   By: lgutniko <lgutniko@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/27 12:06:04 by lgutniko          #+#    #+#             */
-/*   Updated: 2017/05/03 14:01:03 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/04 18:38:00 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,25 @@
 # define BLUE "\033[0;34m"
 # define NC "\033[0m"
 
-struct _PersonalInfo
+typedef struct _PersonalInfo
 {
-	int	rec_num;
 	char name[20];
 	char lastname[20];
-	char iq[20];
+	char age[20];
 	char workplace[30];
-};
+}				PersonalInfo;
 
-typedef struct _PersonalInfo PersonalInfo;
+typedef struct	s_opts
+{
+	int			srch;
+	int			key;
+	int			del;
+	int			edit;
+	int			print;
+	int			num;
+	char		*mode;
+}				t_opts;
 
-void get_options(int argc, char **argv);
 void get_record(char *line, PersonalInfo *pInfo);
 
 void find_record(FILE *fp);
@@ -65,6 +72,7 @@ void del_by_keyword(FILE *fp, char **argv);
 void print_database(FILE *fp);
 void print_record(PersonalInfo *pInfo, int counter);
 void print_usage(const char *prog_name);
+void no_record_found_message(FILE *fp, int record_nm, char *key);
 
 void edit_record(char *buf, char *srch_term, FILE *fp, char **argv);
 void edit_field(PersonalInfo *pInfo, int nm);

@@ -6,20 +6,19 @@
 /*   By: iiliuk <iiliuk@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 13:31:23 by iiliuk            #+#    #+#             */
-/*   Updated: 2017/05/02 17:43:40 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/04 18:39:26 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_db.h"
 
-/* print_record: Print each text segment out as a record on separate lines */
 void 	print_record(PersonalInfo *pInfo, int counter)
 {
 	if (counter != 0)
 		printf(GREEN "Record No.: %d\n" NC, counter);
 	printf("Firstname: %s\n", pInfo->name);
 	printf("Lastname: %s\n", pInfo->lastname);
-	printf("IQ: %s\n", pInfo->iq);
+	printf("Age: %s\n", pInfo->age);
 	printf("Workplace: %s\n\n", pInfo->workplace);
 }
 
@@ -43,7 +42,7 @@ void	print_database(FILE *fp)
 void	print_usage(const char *prog_name)
 {
 	fprintf(stderr, RED
-		"Usage: %s [-flags] [file_name.db]\n"
+		"Usage: %s [-option] [file_name.db]\n"
 		BLUE"--help			-h	print this information\n"
 		"--append		-a	add records or create new file if not present\n"
 		"--search		-s	find records in specified file\n"
@@ -54,4 +53,18 @@ void	print_usage(const char *prog_name)
 		"--print all		-p	print all records in specified file\n" NC,
 		prog_name);
 	exit(-1);
+}
+
+void	no_record_found_message(FILE *fp, int record_nm, char *key)
+{
+	if (record_nm)
+		printf(RED "\nThere's no record No %d in database\n", record_nm);
+	else if (key)
+		printf(RED "\nThere's no record found by the \"%s\" keyword\n", key);
+	else
+		printf(RED "\nThere's no record matching your request\n");
+	printf("Print database to see existing records");
+	printf("(./ft_db -p [file_name.db])\n" NC);
+	fclose(fp);
+	exit(1);
 }
