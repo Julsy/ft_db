@@ -6,7 +6,7 @@
 /*   By: lgutniko <lgutniko@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/27 12:06:04 by lgutniko          #+#    #+#             */
-/*   Updated: 2017/05/04 18:38:00 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/11 13:18:27 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ typedef struct _PersonalInfo
 	char name[20];
 	char lastname[20];
 	char age[20];
-	char workplace[30];
+	char workplace[20];
 }				PersonalInfo;
 
 typedef struct	s_opts

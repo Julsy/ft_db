@@ -6,7 +6,7 @@
 #    By: lgutniko <lgutniko@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/27 12:03:56 by lgutniko          #+#    #+#              #
-#    Updated: 2017/05/04 18:26:00 by iiliuk           ###   ########.fr        #
+#    Updated: 2017/05/10 15:58:08 by iiliuk           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,9 @@ $(NAME):
 	@gcc $(CFLAGS) -c $(SRC)
 	@gcc $(CFLAGS) -o $(NAME) $(OBJ)
 	@echo "${GR}ft_db is ready to run${NC}"
+
+leaks: re
+	@osascript -e 'tell application "iTerm2" to activate' -e 'tell application "System Events" to tell process "iTerm2" to keystroke "D" using command down' -e 'tell application "System Events" to tell process "iTerm" to keystroke "while true ; do clear; leaks $(NAME); sleep 2 ; done"' -e 'tell application "System Events" to tell process "iTerm" to key code 52'
 
 clean:
 	@/bin/rm -f $(OBJ)

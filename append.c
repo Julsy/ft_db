@@ -6,7 +6,7 @@
 /*   By: iiliuk <iiliuk@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 12:46:42 by iiliuk            #+#    #+#             */
-/*   Updated: 2017/05/04 18:41:23 by iiliuk           ###   ########.fr       */
+/*   Updated: 2017/05/11 16:46:39 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,37 @@ int g_flag = 0;
 /* fetch: Store input from user */
 void		fetch(char *buffer)
 {
-	int c, i;
+	ssize_t	input_len;
+	size_t	bufsize;
+	char	*tmp;
 
-	i = 0;
-	while ((c = getchar()) != '\n')
+	int i = 0;
+	tmp = (char *)malloc(sizeof(char) * MAX_BLOCK + 1);
+	memset(tmp, '\0', MAX_BLOCK + 1);
+	tmp[0] = '\n';
+	input_len = 0;
+	bufsize = 0;
+	while (tmp[0] == '\n')
+		input_len = getline(&tmp, &bufsize, stdin);
+	tmp[input_len - 1] = '\0';
+	if (input_len > MAX_BLOCK)
 	{
-		if (i >= MAX_BLOCK)
-		{
-			printf(BLUE "Exceeded maximum allowed lenght\n" NC);
-			break ;
-		}
-		buffer[i++] = c;
+		printf(RED "Exceeded max allowed length.\n");
+		printf("Please try again\n" NC);
+		free(tmp);
+		tmp = NULL;
+		return (fetch(buffer));
+	}
+	else if (tmp[0] == '\n')
+		printf(CYAN "Feild remains empty\nYou can edit it later\n" NC);
+	while (tmp[i] != '\0' && i < (MAX_BLOCK - 1))
+	{
+		buffer[i] = tmp[i];
+		i++;
 	}
 	buffer[i] = '\0';
+	free(tmp);
+	tmp = NULL;
 }
 
 
@@ -38,6 +56,7 @@ static int	digit_check(char *str)
 	int i;
 
 	i = 0;
+	printf("STR: %s\n", str);
 	while (str[i] != '\0')
 	{
 		if (isdigit(str[i]))
@@ -72,7 +91,6 @@ static void	age_loop(PersonalInfo *pInfo)
 void		append(PersonalInfo *pInfo, FILE *fp)
 {
 	char line[MAXLINE];
-	
 
 	if (g_flag)
 	{
